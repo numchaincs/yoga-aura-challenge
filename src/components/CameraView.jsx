@@ -1,17 +1,19 @@
 import React, { useEffect, useRef } from "react";
 
+// ชุดข้อมูลสำหรับการเชื่อมจุดกระดูก (Skeleton Connections) - ไม่ได้แก้ไข
 const SKELETON_CONNECTIONS = [
-  ["nose","left_eye"],["nose","right_eye"],
-  ["left_eye","left_ear"],["right_eye","right_ear"],
-  ["left_shoulder","right_shoulder"],
-  ["left_shoulder","left_hip"],["right_shoulder","right_hip"],
-  ["left_hip","right_hip"],
-  ["left_shoulder","left_elbow"],["left_elbow","left_wrist"],
-  ["right_shoulder","right_elbow"],["right_elbow","right_wrist"],
-  ["left_hip","left_knee"],["left_knee","left_ankle"],
-  ["right_hip","right_knee"],["right_knee","right_ankle"],
+  ["nose", "left_eye"], ["nose", "right_eye"],
+  ["left_eye", "left_ear"], ["right_eye", "right_ear"],
+  ["left_shoulder", "right_shoulder"],
+  ["left_shoulder", "left_elbow"], ["left_elbow", "left_wrist"],
+  ["right_shoulder", "right_elbow"], ["right_elbow", "right_wrist"],
+  ["left_shoulder", "left_hip"], ["right_shoulder", "right_hip"],
+  ["left_hip", "right_hip"],
+  ["left_hip", "left_knee"], ["left_knee", "left_ankle"],
+  ["right_hip", "right_knee"], ["right_knee", "right_ankle"]
 ];
 
+// ฟังก์ชันวาดรูป Skeleton (ไม่ได้แก้ไข)
 function drawSkeleton(ctx, keypoints, canvasW, canvasH, videoW, videoH) {
   const videoAspect  = videoW / videoH;
   const canvasAspect = canvasW / canvasH;
@@ -63,7 +65,7 @@ export default function CameraView({ videoRef, keypoints, isActive }) {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 30 } },
           audio: false,
-        });
+          });
         streamRef.current = stream;
         if (videoRef.current) { videoRef.current.srcObject = stream; await videoRef.current.play(); }
       } catch (err) { console.error("Camera error:", err); }
@@ -86,9 +88,11 @@ export default function CameraView({ videoRef, keypoints, isActive }) {
   }, [keypoints, videoRef]);
 
   return (
-    <div className="camera-container">
-      <video ref={videoRef} className="camera-video" autoPlay playsInline muted />
-      <canvas ref={canvasRef} className="skeleton-canvas" aria-hidden="true" />
+    <div className="camera-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* แก้ไขบรรทัดล่างนี้: พลิกวิดีโอ (Mirror) */}
+      <video ref={videoRef} className="camera-video" autoPlay playsInline muted style={{ transform: "scaleX(-1)", width: '100%', height: '100%', objectFit: 'cover' }} />
+      {/* แก้ไขบรรทัดล่างนี้: พลิกแคนวาส (Mirror) และวางทับวิดีโอ */}
+      <canvas ref={canvasRef} className="skeleton-canvas" aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', transform: "scaleX(-1)", pointerEvents: 'none' }} />
       <div className="corner corner-tl" /><div className="corner corner-tr" />
       <div className="corner corner-bl" /><div className="corner corner-br" />
     </div>
